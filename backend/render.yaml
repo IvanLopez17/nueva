@@ -1,0 +1,22 @@
+databases:
+  - name: travel-agency-db
+    databaseName: travel_agency
+    user: travel_agency_user
+
+services:
+  - type: web
+    name: travel-agency-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn travel_agency.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: DATABASE_URL
+        fromDatabase:
+          name: travel-agency-db
+          property: connectionString
